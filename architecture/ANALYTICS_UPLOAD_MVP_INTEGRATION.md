@@ -47,6 +47,20 @@ Analytics Upload MVP allows a user to upload a legal document for **private anal
 
 ## 3) Shared API contract
 
+### Required authn/authz contract (MVP)
+
+This is a required part of the API contract and **must not** be treated as optional:
+- Every analytics endpoint requires an authenticated caller identity.
+- Every analytics run is bound to both:
+  - `owner_user_id` (the creator), and
+  - `workspace_id` (the tenant/workspace context at creation time).
+- Access to `GET /jpis/analytics/:id` is allowed only when the caller belongs to the same `workspace_id`.
+- Within that workspace, access is further restricted to:
+  - the `owner_user_id`, or
+  - a workspace member with an explicit analytics-read permission (e.g., workspace admin/reviewer role).
+- If the run exists but caller is not authorized, return `404` (or equivalent non-disclosing response) to avoid leaking run existence across tenants.
+- ID values must be treated as opaque identifiers; possession of `:id` alone never grants read access.
+
 ## POST `/jpis/analytics/upload`
 Upload a legal document for private analytics processing.
 
@@ -154,8 +168,7 @@ Expected constraints:
 
 ## Open integration questions
 
-1. Authentication scope: should analytics runs be user-scoped, workspace-scoped, or both?
-2. Retention policy: how long are private uploads/artifacts stored by default?
-3. Error model: should `failed` include standardized machine-readable error codes?
-4. Polling vs push: should frontend rely on polling only, or add SSE/WebSocket updates later?
-5. Promotion governance: which role(s) can approve private-to-public promotion?
+1. Retention policy: how long are private uploads/artifacts stored by default?
+2. Error model: should `failed` include standardized machine-readable error codes?
+3. Polling vs push: should frontend rely on polling only, or add SSE/WebSocket updates later?
+4. Promotion governance: which role(s) can approve private-to-public promotion?
