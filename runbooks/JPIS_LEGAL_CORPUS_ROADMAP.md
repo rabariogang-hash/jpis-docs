@@ -1,91 +1,141 @@
-# JPIS Legal Corpus Roadmap
+# JPIS roadmap pravnog korpusa
 
-## Purpose
+## Svrha
 
-JPIS is building a complete legal corpus, not only a set of laws cited in the initial golden court-decision set.
+JPIS gradi kompletan pravni korpus, a ne samo skup zakona koji su citirani u početnom golden setu presuda.
 
-Court decisions are used for prioritization, article linking, parser validation, and post-ingestion quality checks. They do not decide whether a legal act belongs in the corpus. The long-term corpus should cover key legal acts from Bosnia and Herzegovina, the Federation of Bosnia and Herzegovina, Republika Srpska, Brcko District of Bosnia and Herzegovina, and relevant international and EU sources.
+Presude služe za prioritizaciju, povezivanje članova, validaciju parsera i provjeru kvaliteta nakon ingestije. One ne odlučuju da li pravni akt ulazi u korpus. Dugoročni korpus treba obuhvatiti ključne pravne akte Bosne i Hercegovine, Federacije Bosne i Hercegovine, Republike Srpske, Brčko distrikta Bosne i Hercegovine, kao i relevantne međunarodne i EU izvore.
 
-This document is an operational roadmap and backlog framework. It is not a final list of all legal acts and it is not an official legal catalogue.
+Ovaj dokument je operativni roadmap i backlog okvir. Nije konačan popis svih pravnih akata i nije službeni pravni katalog.
 
-## Jurisdictions and Source Domains
+## Jurisdikcije i izvori
 
-- Bosnia and Herzegovina
-- Federation of Bosnia and Herzegovina
+- Bosna i Hercegovina
+- Federacija Bosne i Hercegovine
 - Republika Srpska
-- Brcko District of Bosnia and Herzegovina
-- International sources relevant to Bosnia and Herzegovina
-- EU law relevant to Bosnia and Herzegovina and acquis alignment
+- Brčko distrikt Bosne i Hercegovine
+- Međunarodni izvori relevantni za Bosnu i Hercegovinu
+- EU pravo relevantno za Bosnu i Hercegovinu i usklađivanje sa acquis-em
 
-## Status Model
+## Model statusa
 
-Each future legal act should carry one explicit operational status:
+Status pravnog akta u JPIS-u ne smije miješati pravnu važnost akta, fazu obrade korpusa i tehničku oznaku kvaliteta dataseta. Za buduće akte koriste se tri odvojena polja.
 
-- `planned` - identified as part of the corpus backlog
-- `source_discovery` - candidate sources are being located
-- `source_verified` - authoritative or operationally acceptable source is confirmed
-- `extraction` - text extraction is in progress
-- `processing` - article segmentation, cleanup, metadata, and review are in progress
-- `dataset_ready` - canonical dataset files are prepared and validated locally
-- `operational_preview` - imported or usable as an operational preview, with explicit limitations
-- `active` - active production corpus item at its approved verification level
-- `consolidated_latest_preview_ready` - consolidated latest preview is available, with non-authoritative status clearly marked
-- `archived_or_repealed` - archived, repealed, or superseded act retained for historical/legal context
-- `needs_review` - requires legal, metadata, source, extraction, or article-level review
+### `legal_status` - pravni status akta
 
-## Ingestion Waves
+`legal_status` odgovara na pitanje:
 
-### Wave 1: Foundational Legal Acts
+> Da li akt trenutno pravno važi i kakav je njegov normativni položaj?
 
-- Criminal substantive and procedural law
-- Civil law and obligations
-- Civil procedure
-- Administrative procedure
-- Administrative disputes
-- Enforcement procedure
-- Real rights and ownership
-- Companies and business entities
-- Labor relations
+Vrijednosti:
 
-### Wave 2: Judiciary and Legal Profession
+- `active` - akt je trenutno na snazi
+- `repealed` - akt je ukinut
+- `superseded` - akt je zamijenjen drugim aktom ili novijom regulacijom
+- `historical` - akt se čuva zbog historijskog, prijelaznog ili sudsko-praktičnog značaja
+- `unknown` - pravni status nije potvrđen
 
-- Courts
-- Prosecutor's offices
-- High Judicial and Prosecutorial Council
-- Advocacy/legal profession
-- Notaries
-- Court fees
-- Enforcement officers
-- Expert witnesses
-- Free legal aid
+### `corpus_status` - status obrade akta u JPIS-u
 
-### Wave 3: Sectoral Law
+`corpus_status` odgovara na pitanje:
 
-- Spatial planning
-- Construction
-- Taxes
-- Public procurement
-- Consumer protection
-- Personal data protection
-- Family law
-- Inheritance
-- Public administration
-- Economy and finance
+> U kojoj se fazi pribavljanja, obrade, validacije ili dostupnosti akt nalazi unutar JPIS-a?
 
-### Wave 4: International and EU Law
+Vrijednosti:
 
-- European Convention on Human Rights and protocols
-- Key UN conventions
-- Stabilisation and Association Agreement
-- Relevant EU regulations and directives
-- Judicial cooperation
-- Digital evidence
-- GDPR and data protection
-- AI and cybersecurity
+- `planned` - akt je identificiran kao dio backlog-a korpusa
+- `source_discovery` - traže se kandidatski izvori
+- `source_verified` - potvrđen je autoritativni ili operativno prihvatljiv izvor
+- `extraction` - ekstrakcija teksta je u toku
+- `processing` - segmentacija članova, čišćenje, metadata i pregled su u toku
+- `dataset_ready` - canonical dataset fajlovi su pripremljeni i lokalno validirani
+- `imported` - akt je unesen u JPIS backend
+- `operational_preview` - akt je dostupan kao operativni preview, uz jasno označena ograničenja
+- `validated` - akt je prošao post-ingestion provjere, uključujući broj članova, API/DB provjeru i osnovnu frontend provjeru
+- `needs_review` - potreban je dodatni pravni, metadata, izvorni, ekstrakcijski ili article-level pregled
 
-## Currently Completed Acts in JPIS
+### `review_status` - oznaka kvaliteta i nivoa pregleda
 
-| Canonical ID | Short title | Known status |
+`review_status` je slobodna, ali dokumentovana tehnička oznaka koja opisuje kvalitet, verziju obrade i nivo izvršenog pregleda dataseta.
+
+`review_status` odgovara na pitanje:
+
+> Koji je nivo pregleda, normalizacije, segmentacije i provjere izvršen nad konkretnim datasetom?
+
+Primjeri:
+
+- `baseline_segmented_clean_v4`
+- `consolidated_latest_preview_ready`
+
+Napomene:
+
+- Postojeći dataset model koristi `status: active` kao pravni status.
+- `metadata.review_status` nosi oznaku kvaliteta i nivoa pregleda.
+- Tehničke vrijednosti ostaju na engleskom jer su dio stabilnog modela podataka, ali njihova objašnjenja u dokumentaciji moraju biti na bosanskom jeziku.
+
+Primjer za ZKP BiH:
+
+```text
+Pravni status: `active`
+Status korpusa: `imported`
+Oznaka pregleda: `baseline_segmented_clean_v4`
+```
+
+ZKP BiH pravno važi, već je unesen u JPIS i ima bazni operativni nivo obrade i pregleda.
+
+## Ingestion valovi
+
+### Val 1: temeljni propisi
+
+- Krivično materijalno i procesno pravo
+- Građansko pravo i obligacije
+- Parnični postupak
+- Upravni postupak
+- Upravni spor
+- Izvršni postupak
+- Stvarna prava i vlasništvo
+- Privredna društva
+- Radni odnosi
+
+### Val 2: pravosuđe i pravna profesija
+
+- Sudovi
+- Tužilaštva
+- Visoko sudsko i tužilačko vijeće
+- Advokatura i pravna profesija
+- Notari
+- Sudske takse
+- Izvršitelji
+- Vještaci
+- Besplatna pravna pomoć
+
+### Val 3: sektorsko pravo
+
+- Prostorno uređenje
+- Građenje
+- Porezi
+- Javne nabavke
+- Zaštita potrošača
+- Zaštita ličnih podataka
+- Porodično pravo
+- Nasljeđivanje
+- Javna uprava
+- Privreda i finansije
+
+### Val 4: međunarodno i EU pravo
+
+- Evropska konvencija o ljudskim pravima i protokoli
+- Ključne UN konvencije
+- Sporazum o stabilizaciji i pridruživanju
+- Relevantne EU uredbe i direktive
+- Pravosudna saradnja
+- Digitalni dokazi
+- `GDPR` i zaštita podataka
+- `AI` i kibernetička sigurnost
+
+## Trenutno završeni akti u JPIS-u
+
+| Canonical ID | Kratki naziv | Poznati status |
 | --- | --- | --- |
 | `criminal_code_bih` | KZ BiH | `consolidated_latest_preview_ready` |
 | `criminal_procedure_code_bih` | ZKP BiH | `baseline_segmented_clean_v4` |
@@ -93,40 +143,40 @@ Each future legal act should carry one explicit operational status:
 | `zpp_fbih` | ZPP FBiH | `operational_preview` |
 | `zpd_fbih` | ZPD FBiH | `operational_preview` |
 
-These acts are considered complete for their currently approved operational status. The status labels describe verification and processing level, not whether the act is useful in the current system.
+Ovi akti se smatraju završenim za trenutno odobreni operativni nivo. Oznake statusa opisuju nivo provjere i obrade, a ne znače da akt nije upotrebljiv u trenutnom sistemu.
 
-## Next Wave 1 Batch Candidates
+## Sljedeći kandidati iz Vala 1
 
-- Zakon o parnicnom postupku Republike Srpske
-- Zakon o parnicnom postupku Brcko distrikta BiH
+- Zakon o parničnom postupku Republike Srpske
+- Zakon o parničnom postupku Brčko distrikta BiH
 - Zakon o upravnim sporovima Republike Srpske
-- Zakon o opstem upravnom postupku Republike Srpske
+- Zakon o opštem upravnom postupku Republike Srpske
 - Zakon o stvarnim pravima Republike Srpske
-- Relevant Brcko administrative and procedural regulations
+- Relevantni Brčko upravni i procesni propisi
 
-These are not the only laws that will be ingested. They are the next operational candidates for processing based on corpus coverage needs and court-decision validation signals.
+Ovo nisu jedini zakoni koji će se unositi. To su sljedeći operativni kandidati za obradu na osnovu potrebe za pokrivenošću korpusa i validacijskih signala iz presuda.
 
-## Standard Processing Workflow for Each Act
+## Standard obrade svakog akta
 
-Each legal act should pass through the following controlled workflow:
+Svaki pravni akt treba proći kroz kontrolisani workflow:
 
-1. Identify an authoritative source.
-2. Record official gazette references and amendment history.
-3. Run extraction audit.
-4. Build a controlled preview dataset.
-5. Verify UTF-8 without BOM.
-6. Run dry-run ingestion.
-7. Require explicit approval before production import.
-8. Verify API and DB counts after production import.
-9. Verify frontend list/detail behavior.
-10. Run post-ingestion article-link validation against court decisions.
+1. Identificirati autoritativni izvor.
+2. Evidentirati službeni glasnik i historiju izmjena.
+3. Provesti extraction audit.
+4. Izgraditi kontrolisani preview dataset.
+5. Provjeriti `UTF-8` bez `BOM` oznake.
+6. Pokrenuti dry-run ingestije.
+7. Tražiti izričito odobrenje prije production importa.
+8. Provjeriti API i DB brojčano stanje nakon production importa.
+9. Provjeriti frontend list/detail prikaz.
+10. Pokrenuti post-ingestion validaciju povezivanja članova preko presuda.
 
-## Safety Rules
+## Pravila sigurnosti
 
-- Never run `git reset --hard`.
-- Never run `git clean`.
-- Never run `git add .`.
-- Never import without a clean dry-run first.
-- Never write to production API or DB without explicit approval.
-- Never print `JPIS_IMPORT_API_KEY` or any equivalent secret value.
-- Never delete local `jpis-ingestion` logs or outputs without a dedicated review.
+- Nikad ne pokretati `git reset --hard`.
+- Nikad ne pokretati `git clean`.
+- Nikad ne koristiti `git add .`.
+- Nikad ne raditi import bez čistog dry-run rezultata.
+- Nikad ne pisati u production API ili DB bez izričitog odobrenja.
+- Nikad ne ispisivati `JPIS_IMPORT_API_KEY` ili bilo koju ekvivalentnu tajnu vrijednost.
+- Nikad ne brisati lokalne `jpis-ingestion` logove ili outpute bez posebnog review-a.
