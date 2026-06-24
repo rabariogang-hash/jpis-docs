@@ -205,6 +205,34 @@ Nije dopušteno:
 5. `READY_FOR_TRANSFER` zakoni idu u izolovan canonical review.
 6. Import se radi u malim eksplicitno odobrenim serijama, npr. 3–5 zakona, sa post-import API provjerom svakog zakona.
 
+
+### 6.4. Batch MVP faza 1
+
+Batch MVP faza 1 uvodi operativni alat za registry validaciju, planiranje i kontrolisano javno pribavljanje izvora za pravne akte.
+
+Ova faza radi samo:
+
+- čitanje centralnog registryja pravnih akata;
+- provjeru obaveznih registry polja, uključujući `canonical_id`, `jurisdiction`, `legal_domain` i alias-e;
+- izbor zakona po `--law` ili po `--wave`;
+- preuzimanje samo pojedinačnih javno otvorenih HTML, PDF ili DOCX izvora koji su eksplicitno navedeni u registryju;
+- izračun SHA-256 hash-a za preuzete izvore;
+- lokalni `source-manifest.json` u `data-processing`;
+- lokalni batch report sa statusom svakog odabranog zakona.
+
+Batch acquisition ne znači da je zakon spreman za produkciju. U ovoj fazi se ne pravi canonical dataset, ne generišu se `articles/*.json`, ne radi se ingestion, ne poziva se backend i ne piše se u bazu.
+
+Ako jedan zakon nema javni izvor ili download padne, batch mora evidentirati `blocked` ili `needs_manual_source` za taj zakon i nastaviti sa ostalim odabranim zakonima.
+
+Nakon Batch MVP faze 1 slijede zasebno odobrene faze:
+
+1. extraction audit;
+2. segmentacija;
+3. lokalni dataset preview;
+4. canonical transfer review;
+5. schema i dry-run validacija;
+6. izričito odobren production import.
+
 ## 7. Faze implementacije
 
 ### Faza A — zaštite retrievala prije masovne ingestije
