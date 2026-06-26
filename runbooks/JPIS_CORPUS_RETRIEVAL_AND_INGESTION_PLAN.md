@@ -567,3 +567,33 @@ post-import test: obavezan prije naredne serije
 ```
 
 Ovaj pristup daje brzinu u pripremi korpusa, a sprečava da se kasnije mjesecima ručno popravljaju greške nastale zbog pogrešne jurisdikcije, verzije ili miješanja članova.
+
+## 13. Batch MVP faza 3 — manual review pack
+
+Nakon `extraction` faze, a prije bilo kakvog canonical previewa, za svaki akt se može napraviti lokalni manual review pack. Ovaj paket služi samo za pregled kandidata članova, upozorenja i anomalija.
+
+Manual review pack:
+
+- čita postojeće `extraction-intermediate.json` i `extraction-audit.json`;
+- pravi `review-summary.json`, `review-candidates.jsonl`, `review-anomalies.json`, `review-pack.md` i `reviewer-decisions.template.json`;
+- ne mijenja raw izvor, source manifest, registry ili canonical dataset;
+- ne donosi pravnu odluku o tome da li je kandidat dio budućeg teksta zakona;
+- ne radi ingestion, import, reindex ili bilo kakav API/DB write.
+
+Reviewer odluke ostaju ručni quality gate. Svi kandidati u templateu počinju sa `pending`, a dozvoljene odluke su tehničke oznake za budući preview workflow:
+
+- `include_in_future_preview`
+- `exclude_as_amendment_or_non_normative`
+- `retain_as_deleted_article_marker`
+- `requires_source_verification`
+- `requires_manual_boundary_review`
+- `pending`
+
+Markdown review paket mora jasno nositi oznake:
+
+```text
+NOT A CANONICAL DATASET
+NOT APPROVED FOR IMPORT
+```
+
+Tek nakon ručnog pregleda i zasebne odluke može se planirati canonical preview generator. Manual review pack sam po sebi ne znači da je zakon spreman za produkciju.
